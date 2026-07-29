@@ -5,7 +5,9 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    $products = \App\Models\Product::latest()->take(3)->get();
+
+    return view('welcome', compact('products'));
 });
 
 Route::get('/dashboard', function () {

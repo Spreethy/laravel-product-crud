@@ -12,7 +12,9 @@ class StockAlert extends Model
     use HasFactory;
 
     public const TYPE_LOW_STOCK = 'low_stock';
+
     public const STATUS_OPEN = 'open';
+
     public const STATUS_RESOLVED = 'resolved';
 
     protected $fillable = [

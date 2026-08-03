@@ -34,6 +34,9 @@
                             <span class="ms-1 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-700">{{ $openAlertCount }}</span>
                         @endif
                     </x-nav-link>
+                    <x-nav-link :href="route('reports.index')" :active="request()->routeIs('reports.*')">
+                        {{ __('Reports') }}
+                    </x-nav-link>
                     <x-nav-link :href="route('chat.index')" :active="request()->routeIs('chat.*')">
                         {{ __('AI Chat') }}
                     </x-nav-link>
@@ -114,6 +117,9 @@
                 @if ($openAlertCount > 0)
                     <span class="ms-1 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-700">{{ $openAlertCount }}</span>
                 @endif
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('reports.index')" :active="request()->routeIs('reports.*')">
+                {{ __('Reports') }}
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('chat.index')" :active="request()->routeIs('chat.*')">
                 {{ __('AI Chat') }}

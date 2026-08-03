@@ -35,9 +35,10 @@ class ProductController extends Controller
 
     public function show(Product $product)
     {
-        $product->load(['category', 'supplier']);
+        $product->load(['category', 'supplier', 'movements.user']);
+        $recentMovements = $product->movements->take(10);
 
-        return view('products.show', compact('product'));
+        return view('products.show', compact('product', 'recentMovements'));
     }
 
     public function edit(Product $product)

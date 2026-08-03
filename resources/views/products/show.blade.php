@@ -56,7 +56,38 @@
 
                 <div class="mt-6 flex space-x-3">
                     <a href="{{ route('products.edit', $product) }}" class="bg-indigo-500 text-white px-4 py-2 rounded hover:bg-indigo-600">Edit</a>
+                    <a href="{{ route('stock.create', ['product_id' => $product->id]) }}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Record Stock</a>
                     <a href="{{ route('products.index') }}" class="text-gray-600 hover:underline py-2">Back</a>
+                </div>
+            </div>
+
+            <div class="bg-white rounded shadow p-6 max-w-lg mx-auto mt-6">
+                <h2 class="text-lg font-semibold mb-4">Recent Stock Movements</h2>
+
+                @forelse ($recentMovements as $movement)
+                    <div class="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
+                        <div class="flex items-center gap-3">
+                            @php
+                                $typeBadge = [
+                                    'in' => ['bg-green-100 text-green-700', 'In'],
+                                    'out' => ['bg-red-100 text-red-700', 'Out'],
+                                    'adjustment' => ['bg-amber-100 text-amber-700', 'Adj'],
+                                ];
+                            @endphp
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold {{ $typeBadge[$movement->type][0] }}">
+                                {{ $typeBadge[$movement->type][1] }}
+                            </span>
+                            <span class="text-sm text-gray-700">{{ $movement->quantity }}</span>
+                            <span class="text-xs text-gray-500">{{ $movement->previous_stock }} → {{ $movement->new_stock }}</span>
+                        </div>
+                        <span class="text-xs text-gray-500">{{ $movement->created_at->format('M d, H:i') }}</span>
+                    </div>
+                @empty
+                    <p class="text-sm text-gray-500">No stock movements yet.</p>
+                @endforelse
+
+                <div class="mt-4">
+                    <a href="{{ route('stock.index', ['product_id' => $product->id]) }}" class="text-indigo-600 hover:underline text-sm">View full history →</a>
                 </div>
             </div>
         </div>

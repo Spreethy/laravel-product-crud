@@ -16,7 +16,7 @@ Route::get('/dashboard', function () {
     $recentProducts = \App\Models\Product::latest()->take(5)->get();
 
     return view('dashboard', compact('totalProducts', 'totalStock', 'recentProducts'));
-})->middleware(['auth', 'verified'])->name('dashboard');
+})->middleware(['auth'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

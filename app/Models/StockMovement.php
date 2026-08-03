@@ -12,7 +12,9 @@ class StockMovement extends Model
     use HasFactory;
 
     public const TYPE_IN = 'in';
+
     public const TYPE_OUT = 'out';
+
     public const TYPE_ADJUSTMENT = 'adjustment';
 
     protected $fillable = [

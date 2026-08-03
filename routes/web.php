@@ -3,6 +3,7 @@
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\StockAlertController;
 use App\Http\Controllers\StockMovementController;
 use App\Http\Controllers\SupplierController;
@@ -18,11 +19,18 @@ Route::get('/', function () {
 Route::get('/dashboard', function () {
     $totalProducts = \App\Models\Product::count();
     $totalStock = \App\Models\Product::sum('stock');
+    $inventoryValue = round(\App\Models\Product::selectRaw('SUM(stock * price) as total')->value('total') ?? 0, 2);
+    $lowStockCount = \App\Models\StockAlert::open()->count();
+    $totalSuppliers = \App\Models\Supplier::count();
+    $totalCategories = \App\Models\Category::count();
     $recentProducts = \App\Models\Product::latest()->take(5)->get();
     $openAlerts = \App\Models\StockAlert::with('product')->open()->latest()->take(5)->get();
-    $openAlertCount = \App\Models\StockAlert::open()->count();
+    $recentMovements = \App\Models\StockMovement::with(['product', 'user'])->latest()->take(5)->get();
 
-    return view('dashboard', compact('totalProducts', 'totalStock', 'recentProducts', 'openAlerts', 'openAlertCount'));
+    return view('dashboard', compact(
+        'totalProducts', 'totalStock', 'inventoryValue', 'lowStockCount',
+        'totalSuppliers', 'totalCategories', 'recentProducts', 'openAlerts', 'recentMovements'
+    ));
 })->middleware(['auth'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
@@ -42,6 +50,17 @@ Route::middleware('auth')->group(function () {
 
     Route::get('alerts', [StockAlertController::class, 'index'])->name('alerts.index');
     Route::post('alerts/{stockAlert}/resolve', [StockAlertController::class, 'resolve'])->name('alerts.resolve');
+
+    Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
+    Route::get('reports/valuation', [ReportController::class, 'valuation'])->name('reports.valuation');
+    Route::get('reports/stock-levels', [ReportController::class, 'stockLevels'])->name('reports.stock_levels');
+    Route::get('reports/movements', [ReportController::class, 'movements'])->name('reports.movements');
+    Route::get('reports/suppliers', [ReportController::class, 'suppliers'])->name('reports.suppliers');
+    Route::get('reports/categories', [ReportController::class, 'categories'])->name('reports.categories');
+    Route::get('reports/export/valuation', [ReportController::class, 'exportValuation'])->name('reports.export_valuation');
+    Route::get('reports/export/stock-levels', [ReportController::class, 'exportStockLevels'])->name('reports.export_stock_levels');
+    Route::get('reports/export/suppliers', [ReportController::class, 'exportSuppliers'])->name('reports.export_suppliers');
+    Route::get('reports/export/categories', [ReportController::class, 'exportCategories'])->name('reports.export_categories');
 
     Route::middleware('admin')->group(function () {
         Route::resource('users', UserController::class)->except(['show']);

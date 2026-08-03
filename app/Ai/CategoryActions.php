@@ -4,6 +4,7 @@ namespace App\Ai;
 
 use App\Models\Category;
 use App\Models\User;
+use Illuminate\Support\Str;
 
 class CategoryActions
 {
@@ -37,7 +38,7 @@ class CategoryActions
 
         $category = Category::create([
             'name' => $name,
-            'slug' => \Illuminate\Support\Str::slug($name),
+            'slug' => Str::slug($name),
             'description' => $action['description'] ?? null,
         ]);
 
@@ -57,7 +58,7 @@ class CategoryActions
 
         if (! empty($action['name'])) {
             $category->name = $action['name'];
-            $category->slug = \Illuminate\Support\Str::slug($action['name']);
+            $category->slug = Str::slug($action['name']);
         }
         if (array_key_exists('description', $action)) {
             $category->description = $action['description'];

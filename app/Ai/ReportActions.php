@@ -2,7 +2,10 @@
 
 namespace App\Ai;
 
+use App\Models\Category;
+use App\Models\Product;
 use App\Models\StockAlert;
+use App\Models\Supplier;
 use App\Models\User;
 
 class ReportActions
@@ -26,8 +29,8 @@ class ReportActions
 
     public function valuation(User $user, array $action): array
     {
-        $total = round(\App\Models\Product::selectRaw('SUM(stock * price) as total')->value('total') ?? 0, 2);
-        $count = \App\Models\Product::count();
+        $total = round(Product::selectRaw('SUM(stock * price) as total')->value('total') ?? 0, 2);
+        $count = Product::count();
 
         return [
             'message' => "**Inventory valuation**\n- Products: {$count}\n- Total inventory value: \${$total}",
@@ -37,10 +40,10 @@ class ReportActions
 
     public function summary(User $user, array $action): array
     {
-        $products = \App\Models\Product::count();
-        $categories = \App\Models\Category::count();
-        $suppliers = \App\Models\Supplier::count();
-        $totalStock = \App\Models\Product::sum('stock');
+        $products = Product::count();
+        $categories = Category::count();
+        $suppliers = Supplier::count();
+        $totalStock = Product::sum('stock');
         $openAlerts = StockAlert::open()->count();
 
         return [

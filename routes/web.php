@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -26,8 +28,13 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('products', ProductController::class);
 
+    Route::get('categories', [CategoryController::class, 'index'])->name('categories.index');
+    Route::get('suppliers', [SupplierController::class, 'index'])->name('suppliers.index');
+
     Route::middleware('admin')->group(function () {
         Route::resource('users', UserController::class)->except(['show']);
+        Route::resource('categories', CategoryController::class)->except(['index']);
+        Route::resource('suppliers', SupplierController::class)->except(['index']);
     });
 
     Route::get('/chat', [\App\Http\Controllers\ChatController::class, 'index'])->name('chat.index');

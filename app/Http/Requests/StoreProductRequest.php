@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreProductRequest extends FormRequest
@@ -12,16 +11,21 @@ class StoreProductRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        return $this->user()?->isStaff() || $this->user()?->isAdmin();
     }
 
     public function rules(): array
     {
         return [
             'name' => 'required|string|max:255',
+            'sku' => 'nullable|string|max:255|unique:products,sku',
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
+            'reorder_level' => 'required|integer|min:0',
+            'is_active' => 'sometimes|boolean',
+            'category_id' => 'nullable|exists:categories,id',
+            'supplier_id' => 'nullable|exists:suppliers,id',
         ];
     }
 }

@@ -34,6 +34,36 @@
 
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
+                    <h3 class="font-semibold text-lg mb-4">Low Stock Alerts</h3>
+                    @if ($openAlerts->count())
+                        <table class="w-full">
+                            <thead>
+                                <tr class="text-left text-xs font-medium text-gray-500 uppercase">
+                                    <th class="pb-2">Product</th>
+                                    <th class="pb-2">Stock</th>
+                                    <th class="pb-2">Reorder Level</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                @foreach ($openAlerts as $alert)
+                                    <tr>
+                                        <td class="py-2">
+                                            <a href="{{ route('products.show', $alert->product) }}" class="text-indigo-600 hover:underline">{{ $alert->product->name }}</a>
+                                        </td>
+                                        <td class="py-2 text-red-600 font-medium">{{ $alert->product->stock }}</td>
+                                        <td class="py-2">{{ $alert->product->reorder_level }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    @else
+                        <p class="text-gray-500">No low-stock alerts. All products are above their reorder level.</p>
+                    @endif
+                </div>
+            </div>
+
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6">
                     <h3 class="font-semibold text-lg mb-4">Recent Products</h3>
                     @if ($recentProducts->count())
                         <table class="w-full">

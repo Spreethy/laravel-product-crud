@@ -3,6 +3,7 @@
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\StockAlertController;
 use App\Http\Controllers\StockMovementController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserController;
@@ -18,8 +19,10 @@ Route::get('/dashboard', function () {
     $totalProducts = \App\Models\Product::count();
     $totalStock = \App\Models\Product::sum('stock');
     $recentProducts = \App\Models\Product::latest()->take(5)->get();
+    $openAlerts = \App\Models\StockAlert::with('product')->open()->latest()->take(5)->get();
+    $openAlertCount = \App\Models\StockAlert::open()->count();
 
-    return view('dashboard', compact('totalProducts', 'totalStock', 'recentProducts'));
+    return view('dashboard', compact('totalProducts', 'totalStock', 'recentProducts', 'openAlerts', 'openAlertCount'));
 })->middleware(['auth'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
@@ -36,6 +39,9 @@ Route::middleware('auth')->group(function () {
     Route::get('stock/create', [StockMovementController::class, 'create'])->name('stock.create');
     Route::post('stock', [StockMovementController::class, 'store'])->name('stock.store');
     Route::delete('stock/{stockMovement}', [StockMovementController::class, 'destroy'])->name('stock.destroy');
+
+    Route::get('alerts', [StockAlertController::class, 'index'])->name('alerts.index');
+    Route::post('alerts/{stockAlert}/resolve', [StockAlertController::class, 'resolve'])->name('alerts.resolve');
 
     Route::middleware('admin')->group(function () {
         Route::resource('users', UserController::class)->except(['show']);

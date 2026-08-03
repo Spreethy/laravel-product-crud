@@ -1,3 +1,4 @@
+@php $openAlertCount = \App\Models\StockAlert::open()->count(); @endphp
 <nav x-data="{ open: false }" class="bg-white border-b border-gray-100">
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -26,6 +27,12 @@
                     </x-nav-link>
                     <x-nav-link :href="route('stock.index')" :active="request()->routeIs('stock.*')">
                         {{ __('Stock') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('alerts.index')" :active="request()->routeIs('alerts.*')">
+                        {{ __('Alerts') }}
+                        @if ($openAlertCount > 0)
+                            <span class="ms-1 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-700">{{ $openAlertCount }}</span>
+                        @endif
                     </x-nav-link>
                     <x-nav-link :href="route('chat.index')" :active="request()->routeIs('chat.*')">
                         {{ __('AI Chat') }}
@@ -101,6 +108,12 @@
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('stock.index')" :active="request()->routeIs('stock.*')">
                 {{ __('Stock') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('alerts.index')" :active="request()->routeIs('alerts.*')">
+                {{ __('Alerts') }}
+                @if ($openAlertCount > 0)
+                    <span class="ms-1 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-700">{{ $openAlertCount }}</span>
+                @endif
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('chat.index')" :active="request()->routeIs('chat.*')">
                 {{ __('AI Chat') }}

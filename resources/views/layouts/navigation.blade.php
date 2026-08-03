@@ -24,6 +24,9 @@
                     <x-nav-link :href="route('suppliers.index')" :active="request()->routeIs('suppliers.*')">
                         {{ __('Suppliers') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('stock.index')" :active="request()->routeIs('stock.*')">
+                        {{ __('Stock') }}
+                    </x-nav-link>
                     <x-nav-link :href="route('chat.index')" :active="request()->routeIs('chat.*')">
                         {{ __('AI Chat') }}
                     </x-nav-link>
@@ -95,6 +98,9 @@
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('suppliers.index')" :active="request()->routeIs('suppliers.*')">
                 {{ __('Suppliers') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('stock.index')" :active="request()->routeIs('stock.*')">
+                {{ __('Stock') }}
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('chat.index')" :active="request()->routeIs('chat.*')">
                 {{ __('AI Chat') }}

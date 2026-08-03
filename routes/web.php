@@ -3,6 +3,7 @@
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\StockMovementController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -30,6 +31,11 @@ Route::middleware('auth')->group(function () {
 
     Route::get('categories', [CategoryController::class, 'index'])->name('categories.index');
     Route::get('suppliers', [SupplierController::class, 'index'])->name('suppliers.index');
+
+    Route::get('stock', [StockMovementController::class, 'index'])->name('stock.index');
+    Route::get('stock/create', [StockMovementController::class, 'create'])->name('stock.create');
+    Route::post('stock', [StockMovementController::class, 'store'])->name('stock.store');
+    Route::delete('stock/{stockMovement}', [StockMovementController::class, 'destroy'])->name('stock.destroy');
 
     Route::middleware('admin')->group(function () {
         Route::resource('users', UserController::class)->except(['show']);

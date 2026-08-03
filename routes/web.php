@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
@@ -8,24 +9,29 @@ use App\Http\Controllers\StockAlertController;
 use App\Http\Controllers\StockMovementController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserController;
+use App\Models\Category;
+use App\Models\Product;
+use App\Models\StockAlert;
+use App\Models\StockMovement;
+use App\Models\Supplier;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    $products = \App\Models\Product::latest()->take(3)->get();
+    $products = Product::latest()->take(3)->get();
 
     return view('welcome', compact('products'));
 });
 
 Route::get('/dashboard', function () {
-    $totalProducts = \App\Models\Product::count();
-    $totalStock = \App\Models\Product::sum('stock');
-    $inventoryValue = round(\App\Models\Product::selectRaw('SUM(stock * price) as total')->value('total') ?? 0, 2);
-    $lowStockCount = \App\Models\StockAlert::open()->count();
-    $totalSuppliers = \App\Models\Supplier::count();
-    $totalCategories = \App\Models\Category::count();
-    $recentProducts = \App\Models\Product::latest()->take(5)->get();
-    $openAlerts = \App\Models\StockAlert::with('product')->open()->latest()->take(5)->get();
-    $recentMovements = \App\Models\StockMovement::with(['product', 'user'])->latest()->take(5)->get();
+    $totalProducts = Product::count();
+    $totalStock = Product::sum('stock');
+    $inventoryValue = round(Product::selectRaw('SUM(stock * price) as total')->value('total') ?? 0, 2);
+    $lowStockCount = StockAlert::open()->count();
+    $totalSuppliers = Supplier::count();
+    $totalCategories = Category::count();
+    $recentProducts = Product::latest()->take(5)->get();
+    $openAlerts = StockAlert::with('product')->open()->latest()->take(5)->get();
+    $recentMovements = StockMovement::with(['product', 'user'])->latest()->take(5)->get();
 
     return view('dashboard', compact(
         'totalProducts', 'totalStock', 'inventoryValue', 'lowStockCount',
@@ -68,9 +74,9 @@ Route::middleware('auth')->group(function () {
         Route::resource('suppliers', SupplierController::class)->except(['index']);
     });
 
-    Route::get('/chat', [\App\Http\Controllers\ChatController::class, 'index'])->name('chat.index');
-    Route::post('/chat/send', [\App\Http\Controllers\ChatController::class, 'send'])->name('chat.send');
-    Route::post('/chat/clear', [\App\Http\Controllers\ChatController::class, 'clear'])->name('chat.clear');
+    Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
+    Route::post('/chat/send', [ChatController::class, 'send'])->name('chat.send');
+    Route::post('/chat/clear', [ChatController::class, 'clear'])->name('chat.clear');
 });
 
 require __DIR__.'/auth.php';

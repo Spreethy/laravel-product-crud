@@ -12,6 +12,13 @@ class Product extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected static function booted(): void
+    {
+        static::saved(function (Product $product) {
+            $product->syncLowStockAlert();
+        });
+    }
+
     protected $fillable = [
         'name',
         'sku',
@@ -45,5 +52,38 @@ class Product extends Model
     public function movements(): HasMany
     {
         return $this->hasMany(StockMovement::class);
+    }
+
+    public function stockAlerts(): HasMany
+    {
+        return $this->hasMany(StockAlert::class);
+    }
+
+    public function openAlerts(): HasMany
+    {
+        return $this->stockAlerts()->open();
+    }
+
+    /**
+     * Keep a single open low-stock alert per product in sync with the stock level.
+     */
+    private function syncLowStockAlert(): void
+    {
+        if ($this->trashed()) {
+            return;
+        }
+
+        $open = $this->stockAlerts()->open()->first();
+
+        if ($this->stock <= $this->reorder_level) {
+            if (! $open) {
+                $this->stockAlerts()->create([
+                    'type' => StockAlert::TYPE_LOW_STOCK,
+                    'status' => StockAlert::STATUS_OPEN,
+                ]);
+            }
+        } elseif ($open) {
+            $open->markResolved();
+        }
     }
 }

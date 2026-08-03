@@ -26,13 +26,17 @@ management system**. It must support:
 | Area | Current state |
 | --- | --- |
 | Framework | Laravel 12.64, PHP 8.2, SQLite, Vite + Tailwind 3 |
-| Auth | Breeze (login, register, profile, email verification) |
+| Auth | Breeze (login, register, profile) — email verification is out of scope and will be removed |
 | Roles | None — every authenticated user has full access |
 | Products | CRUD — `name`, `description`, `price (10,2)`, `stock` |
 | Dashboard | Total products, total stock, recent 5 products |
 | AI chat | Gemini `generateContent`; JSON action protocol for products (list/search/show/create/update/delete); session-based history |
 | Tests | PHPUnit (Feature/Unit), RefreshDatabase |
 | Code style | Laravel Pint, Conventional Commits (`feat:`, `docs:`, etc.) |
+
+> **Scope note:** email verification is **not required**. The Breeze verification
+> routes, `verified` middleware, and verification views will be removed so
+> registration logs users straight into the app.
 
 ---
 
@@ -209,6 +213,7 @@ supported.
 - `docs: add inventory management spec and implementation plan` (this document)
 
 ### Phase 1 — Roles & permissions
+0. `refactor: remove email verification (routes, middleware, views)`
 1. `feat: add role column to users table`
 2. `feat: add Role enum and update User model`
 3. `feat: add admin middleware and role helpers`

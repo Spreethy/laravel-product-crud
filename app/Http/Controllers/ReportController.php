@@ -8,6 +8,7 @@ use App\Models\StockMovement;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class ReportController extends Controller
 {
@@ -69,7 +70,7 @@ class ReportController extends Controller
     public function suppliers()
     {
         $suppliers = Supplier::withCount('products')
-            ->withSum('products as stock_value', \Illuminate\Support\Facades\DB::raw('stock * price'))
+            ->withSum('products as stock_value', DB::raw('stock * price'))
             ->orderBy('name')
             ->get()
             ->map(fn ($s) => [
@@ -85,7 +86,7 @@ class ReportController extends Controller
     public function categories()
     {
         $categories = Category::withCount('products')
-            ->withSum('products as stock_value', \Illuminate\Support\Facades\DB::raw('stock * price'))
+            ->withSum('products as stock_value', DB::raw('stock * price'))
             ->orderBy('name')
             ->get()
             ->map(fn ($c) => [
@@ -144,7 +145,7 @@ class ReportController extends Controller
     private function supplierRows(): Collection
     {
         return Supplier::withCount('products')
-            ->withSum('products as stock_value', \Illuminate\Support\Facades\DB::raw('stock * price'))
+            ->withSum('products as stock_value', DB::raw('stock * price'))
             ->orderBy('name')
             ->get()
             ->map(fn ($s) => [
@@ -155,7 +156,7 @@ class ReportController extends Controller
     private function categoryRows(): Collection
     {
         return Category::withCount('products')
-            ->withSum('products as stock_value', \Illuminate\Support\Facades\DB::raw('stock * price'))
+            ->withSum('products as stock_value', DB::raw('stock * price'))
             ->orderBy('name')
             ->get()
             ->map(fn ($c) => [

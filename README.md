@@ -51,16 +51,40 @@ php artisan serve
 npm run dev
 ```
 
+## Roles & permissions
+
+| Capability | Admin | Staff |
+| --- | :---: | :---: |
+| View products, categories, suppliers | ✅ | ✅ |
+| Create / update products | ✅ | ✅ |
+| Delete products | ✅ | ❌ |
+| Manage categories & suppliers (CRUD) | ✅ | ❌ (view only) |
+| Record stock movements (in / out / adjust) | ✅ | ✅ |
+| Delete / reverse stock movements | ✅ | ❌ |
+| View & resolve low-stock alerts | ✅ | ✅ |
+| View reports | ✅ | ✅ |
+| Export reports (CSV) | ✅ | ❌ |
+| User management (create/edit staff accounts) | ✅ | ❌ |
+
+## Data model
+
+- **users** — id, name, email, password, role (admin|staff)
+- **categories** — name, slug, description (soft deletes)
+- **suppliers** — name, contact_name, email, phone, address, notes (soft deletes)
+- **products** — sku, name, description, price, stock, reorder_level, is_active, category_id, supplier_id (soft deletes)
+- **stock_movements** — product_id, type (in|out|adjustment), quantity, previous_stock, new_stock, reason, user_id
+- **stock_alerts** — product_id, type (low_stock), status (open|resolved), resolved_at, resolved_by
+
+**Stock consistency:** `products.stock` is never written directly — it is updated only in a DB transaction together with a `stock_movements` row (stock never drops below 0), centralized in the `StockMovement` model.
+
+**Low-stock alerts:** when stock drops to or below `reorder_level`, an open alert is created (one per product); it auto-resolves when stock rises back above it. Manual resolution is also supported.
+
 ## Tests & code style
 
 ```bash
 php artisan test
 vendor/bin/pint
 ```
-
-## Documentation
-
-The full specification, permission matrix, data model, and per-phase implementation plan live in [docs/SPEC_AND_PLAN.md](docs/SPEC_AND_PLAN.md).
 
 ## License
 

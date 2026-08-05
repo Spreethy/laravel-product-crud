@@ -1,24 +1,24 @@
 # Inventory Management System
 
-A Laravel 12 inventory/stock management system with role-based access control, a stock movement ledger, automated low-stock alerts, reporting with CSV export, and an AI assistant that can operate on your data through natural language.
+A Laravel 12 app I built for tracking inventory and stock. It has user roles, a running history of every stock change, low-stock warnings, some basic reports you can export to CSV, and a little AI chat helper that can read and edit your data if you ask it to.
 
-## Features
+## What it does
 
-- **Roles & permissions** — `admin` and `staff` roles; admins manage everything, staff get read-only access (plus stock operations). Admin-only routes are enforced via middleware and `abort_unless`.
-- **Products, categories & suppliers** — full CRUD with SKUs, reorder levels, soft deletes, and category/supplier links.
-- **Stock movement ledger** — every stock in/out/adjustment is recorded transactionally with previous and new stock levels; movements can be reverted.
-- **Low-stock alerts** — automatically opened/resolved as stock crosses the reorder level, surfaced in the nav badge and dashboard.
-- **Dashboard & reports** — KPI cards (inventory value, low-stock count, suppliers, categories), and reports for valuation, stock levels, movements, suppliers, and categories, all exportable as CSV.
-- **AI assistant** — a chat interface backed by the Gemini API that can list, search, create, update, and (as admin) delete products, manage categories/suppliers, move stock, and run reports.
+- Two roles: **admin** and **staff**. Admins can do everything; staff can mostly just look at things and move stock around.
+- Manage **products, categories and suppliers** — normal add/edit/delete pages.
+- Every stock **in / out / adjustment** is saved to a ledger so you can see what changed and when, and undo mistakes (admin only).
+- Automatically flags **low stock** and clears the flag once you restock.
+- Dashboard with a few key numbers and a handful of **reports** (valuation, stock levels, movements, suppliers). CSV export is admin-only.
+- An **AI assistant** chat box that can handle product, category, supplier, stock and report actions for you.
 
-## Requirements
+## What you need
 
 - PHP 8.2+
 - Composer
 - SQLite (default) or MySQL/PostgreSQL
-- A [Gemini API key](https://aistudio.google.com/apikey) for the AI assistant
+- A [Gemini API key](https://aistudio.google.com/apikey) if you want the AI assistant to work
 
-## Setup
+## Setting it up
 
 ```bash
 composer install
@@ -27,59 +27,59 @@ cp .env.example .env
 php artisan key:generate
 ```
 
-Add your Gemini API key to `.env`:
+Put your Gemini key in `.env`:
 
 ```
 GEMINI_API_KEY=your_key_here
 ```
 
-Prepare the database and seed demo data:
+Then migrate and load some demo data:
 
 ```bash
 php artisan migrate --seed
 ```
 
-Seed users:
+The seeder creates two accounts:
 
-- **Admin** — `admin@example.com` / `password` (from the default UserFactory)
+- **Admin** — `admin@example.com` / `password`
 - **Staff** — `staff@example.com` / `password`
 
-Start the app:
+Run it:
 
 ```bash
 php artisan serve
 npm run dev
 ```
 
-## Roles & permissions
+## Who can do what
 
-| Capability | Admin | Staff |
+| Thing | Admin | Staff |
 | --- | :---: | :---: |
 | View products, categories, suppliers | ✅ | ✅ |
 | Create / update products | ✅ | ✅ |
 | Delete products | ✅ | ❌ |
-| Manage categories & suppliers (CRUD) | ✅ | ❌ (view only) |
+| Manage categories & suppliers | ✅ | ❌ (view only) |
 | Record stock movements (in / out / adjust) | ✅ | ✅ |
 | Delete / reverse stock movements | ✅ | ❌ |
 | View & resolve low-stock alerts | ✅ | ✅ |
 | View reports | ✅ | ✅ |
 | Export reports (CSV) | ✅ | ❌ |
-| User management (create/edit staff accounts) | ✅ | ❌ |
+| Manage users | ✅ | ❌ |
 
-## Data model
+## How the data fits together
 
-- **users** — id, name, email, password, role (admin|staff)
-- **categories** — name, slug, description (soft deletes)
-- **suppliers** — name, contact_name, email, phone, address, notes (soft deletes)
-- **products** — sku, name, description, price, stock, reorder_level, is_active, category_id, supplier_id (soft deletes)
-- **stock_movements** — product_id, type (in|out|adjustment), quantity, previous_stock, new_stock, reason, user_id
-- **stock_alerts** — product_id, type (low_stock), status (open|resolved), resolved_at, resolved_by
+- **users** — name, email, password, role (admin|staff)
+- **categories** — name, slug, description
+- **suppliers** — name, contact info, notes
+- **products** — sku, name, description, price, stock, reorder_level, is_active, category, supplier
+- **stock_movements** — which product, type (in|out|adjustment), quantity, before/after stock, reason, who did it
+- **stock_alerts** — product, type (low_stock), status (open/resolved)
 
-**Stock consistency:** `products.stock` is never written directly — it is updated only in a DB transaction together with a `stock_movements` row (stock never drops below 0), centralized in the `StockMovement` model.
+**Stock consistency:** product stock is never edited by hand. Every change goes through a transaction that updates the stock and records a movement at the same time, so stock can't be driven below zero.
 
-**Low-stock alerts:** when stock drops to or below `reorder_level`, an open alert is created (one per product); it auto-resolves when stock rises back above it. Manual resolution is also supported.
+**Low-stock alerts:** when stock drops to or below the reorder level an alert is opened (one per product). It closes on its own once you restock above the level, or you can close it manually.
 
-## Tests & code style
+## Tests
 
 ```bash
 php artisan test
@@ -88,4 +88,4 @@ vendor/bin/pint
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is open-sourced under the [MIT license](https://opensource.org/licenses/MIT).

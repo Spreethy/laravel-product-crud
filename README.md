@@ -53,27 +53,25 @@ npm run dev
 
 ## Who can do what
 
-| Thing | Admin | Staff |
-| --- | :---: | :---: |
-| View products, categories, suppliers | ✅ | ✅ |
-| Create / update products | ✅ | ✅ |
-| Delete products | ✅ | ❌ |
-| Manage categories & suppliers | ✅ | ❌ (view only) |
-| Record stock movements (in / out / adjust) | ✅ | ✅ |
-| Delete / reverse stock movements | ✅ | ❌ |
-| View & resolve low-stock alerts | ✅ | ✅ |
-| View reports | ✅ | ✅ |
-| Export reports (CSV) | ✅ | ❌ |
-| Manage users | ✅ | ❌ |
+Everyone with an account can browse products, categories and suppliers, create or edit products, move stock in and out, check and clear low-stock alerts, and view the reports.
+
+The things only an **admin** can do:
+
+- delete products
+- add, edit or remove categories and suppliers (staff can only look at them)
+- undo a stock movement
+- export reports as CSV
+- create and manage user accounts
 
 ## How the data fits together
 
-- **users** — name, email, password, role (admin|staff)
-- **categories** — name, slug, description
-- **suppliers** — name, contact info, notes
-- **products** — sku, name, description, price, stock, reorder_level, is_active, category, supplier
-- **stock_movements** — which product, type (in|out|adjustment), quantity, before/after stock, reason, who did it
-- **stock_alerts** — product, type (low_stock), status (open/resolved)
+The main tables:
+
+- `users` — login info plus a role flag (admin or staff)
+- `categories` and `suppliers` — the usual name and contact fields
+- `products` — sku, name, description, price, stock count, reorder level, and links to a category and supplier
+- `stock_movements` — one row per stock change, with the type (in/out/adjustment), the quantity, the stock before and after, a reason, and who did it
+- `stock_alerts` — which product is low, the alert type, and whether it's still open or already resolved
 
 **Stock consistency:** product stock is never edited by hand. Every change goes through a transaction that updates the stock and records a movement at the same time, so stock can't be driven below zero.
 
